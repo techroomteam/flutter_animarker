@@ -255,6 +255,13 @@ class Animarker extends StatefulWidget {
   ///
   final Set<Marker> markers;
 
+  /// Callback called when animation is in progress: Given [P1,P2] locations,
+  /// when the animation is in progress betweeen Point P1 and P2, this listener will be called to give latest value
+  ///
+  /// So if want to make smooth animation from location P1 and P2 like this [link](https://miro.medium.com/max/600/1*EtoKV1x7ufBgxOPdcsvnJg.gif)
+  /// [onMarkerAnimationListener] will suit you.
+  final Function(Marker)? onMarkerAnimationListener;
+
   /// Callback called when final state of the animation is reach: Given [P1,P2] locations, when
   /// the animation reach the P2 point the callback is called making a stop (t = 1.0).
   ///
@@ -300,6 +307,7 @@ class Animarker extends StatefulWidget {
     required this.mapId,
     this.curve = Curves.linear,
     this.onStopover,
+    this.onMarkerAnimationListener,
     this.zoom = 15.0,
     this.rippleRadius = 0.5,
     this.runExpressAfter = 10,
@@ -411,6 +419,9 @@ class AnimarkerState extends State<Animarker> with TickerProviderStateMixin {
   }
 
   void _locationListener(Marker marker, bool isStopover) async {
+    if (widget.onMarkerAnimationListener != null) {
+      widget.onMarkerAnimationListener!(marker);
+    }
     //Update the marker with animation
     _markers[marker.markerId] = marker;
     var temp = _previousMarkers;
